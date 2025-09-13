@@ -27,4 +27,32 @@ describe("Username Validation Regex", () => {
             expect(regex.test(username)).toBe(false);
         });
     });
+
+    test("Border color is set to green for valid username", () => {
+        // Mock input element
+        const mockInput = {
+            value: "Password1!",
+            style: { borderColor: "" }
+        };
+        // Simulate event listener logic
+        const username = mockInput.value.trim();
+        const regex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
+        mockInput.style.borderColor = regex.test(username) ? "green" : "red";
+        expect(mockInput.style.borderColor).toBe("green");
+    });
+
+    test("Border color is set to red for invalid username", () => {
+        // Mock input element
+        const mockInput = {
+            value: "password",
+            style: { borderColor: "" }
+        };
+        // Simulate event listener logic
+        const username = mockInput.value.trim();
+        const regex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$/;
+        mockInput.style.borderColor = regex.test(username) ? "green" : "red";
+        expect(mockInput.style.borderColor).toBe("red");
+    });
+
+
 });
