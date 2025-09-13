@@ -29,6 +29,27 @@ app.use("/send-email", limiter); // Protect the /send-email endpoint from abuse 
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY); // Initialize Resend with the API key stored in the .env file for secure email sending.
 
+// Endpoint to get dummy financial data
+app.get("/get-data", (req, res) => {
+    const months = [
+        "january", "february", "march", "april", "may", "june",
+        "july", "august", "september", "october", "november", "december"
+    ];
+
+    const financialData = months.reduce((acc, month) => {
+        const expenses = Math.floor(Math.random() * (800 - 200 + 1)) + 200; // Random value between 200 and 800
+        const income = Math.floor(Math.random() * (1000 - (expenses + 1) + 1)) + (expenses + 1); // Random value greater than expenses and up to 1000
+        
+        acc[month] = {
+            income: income,
+            expenses: expenses
+        };
+        return acc;
+    }, {});
+
+    res.status(200).json({ data: financialData });
+});
+
 // Endpoint to send email
 app.post("/send-email", async (req, res) => {
     const { email, chartImage } = req.body;

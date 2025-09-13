@@ -31,7 +31,36 @@ document.addEventListener("DOMContentLoaded", () => {
         "july", "august", "september", "october", "november", "december"
     ];
 
-    // Function to set default values for income and expense inputs
+    // Function to fetch data from the server and set values for income and expense inputs
+    const loadDataFromServer = async () => {
+        try {
+            const response = await fetch("http://localhost:3000/get-data");
+            const result = await response.json();
+            
+            if (result.data) {
+                months.forEach(month => {
+                    const incomeInput = document.getElementById(`income-${month}`);
+                    const expenseInput = document.getElementById(`expenses-${month}`);
+
+                    if (incomeInput && expenseInput && result.data[month]) {
+                        incomeInput.value = result.data[month].income;
+                        expenseInput.value = result.data[month].expenses;
+                    }
+                });
+                
+                // Update the chart with the new data
+                barChart.data.datasets[0].data = getIncomeData();
+                barChart.data.datasets[1].data = getExpenseData();
+                barChart.update();
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            // Fallback to local random generation if API fails
+            setDefaultValues();
+        }
+    };
+
+    // Function to set default values for income and expense inputs (kept as fallback)
     const setDefaultValues = () => {
         months.forEach(month => {
             const incomeInput = document.getElementById(`income-${month}`);
@@ -46,9 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     };
-
-    // Call the function to set default values
-    setDefaultValues();
 
     const usernameInput = document.getElementById("username");
     usernameInput?.addEventListener("input", () => {
@@ -95,6 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
             },
         },
     });
+
+    // Load data from server on page load
+    loadDataFromServer();
 
     document.querySelectorAll("[id^='income-']").forEach(input =>
         input.addEventListener("input", () => {
